@@ -424,19 +424,28 @@ function toTitleCase(value: string) {
 async function sendNotificationEmail(to: string, subject: string, text: string) {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, FROM_EMAIL } = process.env;
   if (!to || !SMTP_HOST || !SMTP_USER || !SMTP_PASS) return false;
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT) || 587,
-    secure: false,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-  });
-  await transporter.sendMail({
-    from: FROM_EMAIL || SMTP_USER,
-    to,
-    subject,
-    text,
-  });
-  return true;
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT) || 587,
+      secure: false,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+    });
+
+    await transporter.sendMail({
+      from: FROM_EMAIL || SMTP_USER,
+      to,
+      subject,
+      text,
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to send email notification:', error);
+    return false;
+  }
 }
 
 async function fetchInterviewPatternFromWeb(company: string, domain: string) {
