@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { ScoreRing } from '@/components/ui/score-ring';
 import { useAppStore } from '@/store/useAppStore';
 import { generateRoadmap, mockCareerRecommendations, mockJobOpportunities } from '@/lib/mockData';
+import { getApiBaseUrl } from '@/lib/api';
 
 function toTitleCase(value: string) {
   return value
@@ -55,7 +56,7 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [dashboardRecommendations, setDashboardRecommendations] = useState(mockCareerRecommendations);
   const [dashboardJobs, setDashboardJobs] = useState<any[]>([]);
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const greetingName = getDashboardGreetingName(profile);
   const completedMilestoneMap = completedMilestones ?? {};
 

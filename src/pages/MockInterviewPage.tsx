@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getApiBaseUrl } from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
 type CompanyItem = {
@@ -15,7 +16,7 @@ type CompanyItem = {
 
 export default function MockInterviewPage() {
   const { profile } = useAppStore();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [company, setCompany] = useState('zoho');
   const [companyFilter, setCompanyFilter] = useState('');

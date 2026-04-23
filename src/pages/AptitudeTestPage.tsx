@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
 import { aptitudeQuestions } from '@/lib/mockData';
+import { getApiBaseUrl } from '@/lib/api';
 import { AptitudeResponse, LogicalResponse } from '@/types/career';
 
 type AptitudeQuestion = {
@@ -46,7 +47,7 @@ export default function AptitudeTestPage() {
   const navigate = useNavigate();
   const { profile, updateProfile, setCurrentStep } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
 
   const [stage, setStage] = useState<'aptitude' | 'logical'>('aptitude');
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -146,7 +147,7 @@ export default function AptitudeTestPage() {
 
     setIsRunning(true);
     try {
-      const response = await fetch('http://localhost:4000/api/code/run', {
+      const response = await fetch(`${base}/api/code/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

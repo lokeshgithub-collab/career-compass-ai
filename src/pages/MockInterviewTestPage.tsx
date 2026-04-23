@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
+import { getApiBaseUrl } from '@/lib/api';
 
 type MCQQuestion = {
   question: string;
@@ -170,7 +171,7 @@ export default function MockInterviewTestPage() {
   const domain = params.get('domain') || 'qa testing';
   const email = params.get('email') || '';
   const sessionId = params.get('sessionId') || '';
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
 
   const questions = useMemo(() => getQuestionsForDomain(domain), [domain]);
   const [currentIndex, setCurrentIndex] = useState(0);

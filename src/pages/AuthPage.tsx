@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
+import { getApiBaseUrl } from '@/lib/api';
 
 type AuthStep = 'signup-form' | 'signup-otp' | 'login-form' | 'forgot-password-form' | 'forgot-password-otp' | 'reset-password-form';
 
@@ -18,7 +19,7 @@ export default function AuthPage() {
   
   const { updateProfile, setAuthenticated, setCurrentStep } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
 
   const [authStep, setAuthStep] = useState<AuthStep>(isLoginMode ? 'login-form' : 'signup-form');
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +73,11 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
+      if (!base) {
+        setError('Backend URL is not configured. Set VITE_API_BASE_URL in Vercel and redeploy.');
+        return;
+      }
+
       const resp = await fetch(`${base}/api/auth/signup/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,6 +121,11 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
+      if (!base) {
+        setError('Backend URL is not configured. Set VITE_API_BASE_URL in Vercel and redeploy.');
+        return;
+      }
+
       const resp = await fetch(`${base}/api/auth/signup/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,6 +171,11 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
+      if (!base) {
+        setError('Backend URL is not configured. Set VITE_API_BASE_URL in Vercel and redeploy.');
+        return;
+      }
+
       const resp = await fetch(`${base}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -202,6 +218,11 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
+      if (!base) {
+        setError('Backend URL is not configured. Set VITE_API_BASE_URL in Vercel and redeploy.');
+        return;
+      }
+
       const resp = await fetch(`${base}/api/auth/forgot-password/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -255,6 +276,11 @@ export default function AuthPage() {
 
     setIsLoading(true);
     try {
+      if (!base) {
+        setError('Backend URL is not configured. Set VITE_API_BASE_URL in Vercel and redeploy.');
+        return;
+      }
+
       const resp = await fetch(`${base}/api/auth/forgot-password/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

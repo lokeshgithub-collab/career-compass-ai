@@ -19,6 +19,7 @@ import { SkillBadge } from '@/components/ui/skill-badge';
 import { useAppStore } from '@/store/useAppStore';
 import { mockCareerRecommendations } from '@/lib/mockData';
 import { CareerRecommendation } from '@/types/career';
+import { getApiBaseUrl } from '@/lib/api';
 
 export default function RecommendationsPage() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function RecommendationsPage() {
   useEffect(() => {
     const loadMlRanking = async () => {
       try {
-        const base = import.meta.env.VITE_API_BASE_URL || '';
+        const base = getApiBaseUrl();
         let normalizedAptitude: Record<string, number> = profile?.aptitude || {};
         if (Object.keys(normalizedAptitude).length === 0) {
           const grouped = (profile?.aptitudeResponses || []).reduce((acc: Record<string, number[]>, item) => {
@@ -161,7 +162,7 @@ export default function RecommendationsPage() {
             <Button
               onClick={async () => {
                 try {
-                  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                  const base = getApiBaseUrl();
                   const resp = await fetch(`${base}/api/skills/simulate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

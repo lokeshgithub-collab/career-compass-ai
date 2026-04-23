@@ -24,12 +24,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { SkillBadge } from '@/components/ui/skill-badge';
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
+import { getApiBaseUrl } from '@/lib/api';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { profile, updateProfile, logout } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const aptitudeCategoryValues = profile?.aptitude ? Object.values(profile.aptitude) : [];
   const aptitudeOverallScore = aptitudeCategoryValues.length > 0
     ? Math.round((aptitudeCategoryValues.reduce((sum, value) => sum + Number(value), 0) / aptitudeCategoryValues.length / 5) * 100)
@@ -442,7 +443,7 @@ export default function ProfilePage() {
                 disabled={!resumeText || !jobDescription}
                 onClick={async () => {
                   try {
-                    const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                    const base = getApiBaseUrl();
                     const resp = await fetch(`${base}/api/resume/ats-optimize`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -490,7 +491,7 @@ export default function ProfilePage() {
                 disabled={!githubUrl}
                 onClick={async () => {
                   try {
-                    const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                    const base = getApiBaseUrl();
                     const resp = await fetch(`${base}/api/portfolio/verify`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },

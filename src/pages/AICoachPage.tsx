@@ -17,6 +17,7 @@ import {
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { getApiBaseUrl } from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 
 const quickPrompts = [
@@ -198,7 +199,7 @@ export default function AICoachPage() {
                       reader.onload = async () => {
                         const text = String(reader.result || '');
                         try {
-                          const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                          const base = getApiBaseUrl();
                           const resp = await fetch(`${base}/api/resume/analyze`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -238,7 +239,7 @@ export default function AICoachPage() {
                         if (!prompt) return;
                         setChatLoading(true);
                         try {
-                          const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                          const base = getApiBaseUrl();
                           const resp = await fetch(`${base}/api/chat`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -337,7 +338,7 @@ export default function AICoachPage() {
                   onClick={async () => {
                     setInterviewLoading(true);
                     try {
-                      const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                      const base = getApiBaseUrl();
                       const resp = await fetch(`${base}/api/interview/start`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -377,7 +378,7 @@ export default function AICoachPage() {
                         onClick={async () => {
                           setInterviewLoading(true);
                           try {
-                            const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                            const base = getApiBaseUrl();
                             const resp = await fetch(`${base}/api/interview/answer`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },

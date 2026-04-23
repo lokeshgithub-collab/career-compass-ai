@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SkillBadge } from '@/components/ui/skill-badge';
 import { useAppStore } from '@/store/useAppStore';
+import { getApiBaseUrl } from '@/lib/api';
 // Jobs are now fetched from backend
 
 export default function JobsPage() {
@@ -33,7 +34,7 @@ export default function JobsPage() {
       setLoading(true);
       setError(null);
       try {
-        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+        const base = getApiBaseUrl();
         
         // Fetch user profile
         const profileResp = await fetch(`${base}/api/user/profile`);
@@ -58,7 +59,7 @@ export default function JobsPage() {
       } catch (err: any) {
         console.error('Load error:', err);
         setJobs([]);
-        setError(err?.message || 'Failed to load jobs. Make sure backend is running at http://localhost:4000');
+        setError(err?.message || 'Failed to load jobs. Check that VITE_API_BASE_URL points to your backend.');
       } finally {
         setLoading(false);
       }
@@ -228,7 +229,7 @@ export default function JobsPage() {
                   onClick={async () => {
                     try {
                       if (!job.applyUrl) return;
-                      const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+                      const base = getApiBaseUrl();
                       const url = job.applyUrl;
                       window.open(url, '_blank');
                       // record application

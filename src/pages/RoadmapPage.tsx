@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { generateRoadmap, mockCareerRecommendations } from '@/lib/mockData';
 import { RoadmapMilestone } from '@/types/career';
+import { getApiBaseUrl } from '@/lib/api';
 
 export default function RoadmapPage() {
   const { selectedCareer, profile, updateProfile, completedMilestones, toggleMilestoneComplete } = useAppStore();
@@ -27,7 +28,7 @@ export default function RoadmapPage() {
   // State for year selection
   const [selectedYear, setSelectedYear] = useState<number | null>(profile?.year || null);
   const [isYearEditing, setIsYearEditing] = useState(false);
-  const base = import.meta.env.VITE_API_BASE_URL || '';
+  const base = getApiBaseUrl();
 
   useEffect(() => {
     if (!isYearEditing && profile?.year && profile.year !== selectedYear) {

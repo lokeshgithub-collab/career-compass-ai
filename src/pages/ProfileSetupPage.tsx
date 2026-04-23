@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
 import { availableSkills, availableInterests } from '@/lib/mockData';
+import { getApiBaseUrl } from '@/lib/api';
 
 const courses = [
   'B.Tech Computer Science',
@@ -26,7 +27,7 @@ export default function ProfileSetupPage() {
   const navigate = useNavigate();
   const { profile, updateProfile } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({

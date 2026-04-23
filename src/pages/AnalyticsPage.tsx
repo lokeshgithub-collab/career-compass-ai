@@ -15,13 +15,14 @@ import { ScoreRing } from '@/components/ui/score-ring';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/useAppStore';
 import { generateRoadmap, mockCareerRecommendations } from '@/lib/mockData';
+import { getApiBaseUrl } from '@/lib/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 export default function AnalyticsPage() {
   const { selectedCareer, completedMilestones, profile } = useAppStore();
   const career = selectedCareer || mockCareerRecommendations[0];
   const allMilestones = generateRoadmap(career.title);
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const [quality, setQuality] = useState<any | null>(null);
   const [kpis, setKpis] = useState<any | null>(null);
   const [health, setHealth] = useState<any | null>(null);

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { getApiBaseUrl } from '@/lib/api';
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
 import { PlacementOutcome } from '@/types/career';
@@ -15,7 +16,7 @@ const outcomeStatuses = ['Applied', 'Shortlisted', 'Interviewing', 'Rejected', '
 export default function OutcomesPage() {
   const { profile } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const userId = profile?.id || 'user-1';
   const [history, setHistory] = useState<PlacementOutcome[]>([]);
   const [isSaving, setIsSaving] = useState(false);

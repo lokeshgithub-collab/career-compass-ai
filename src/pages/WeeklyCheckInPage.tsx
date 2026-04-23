@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAppStore } from '@/store/useAppStore';
 import { useToast } from '@/hooks/use-toast';
 import { WeeklyCheckIn } from '@/types/career';
+import { getApiBaseUrl } from '@/lib/api';
 
 export default function WeeklyCheckInPage() {
   const { profile } = useAppStore();
   const { toast } = useToast();
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+  const base = getApiBaseUrl();
   const userId = profile?.id || 'user-1';
   const [history, setHistory] = useState<WeeklyCheckIn[]>([]);
   const [isSaving, setIsSaving] = useState(false);
