@@ -71,7 +71,34 @@ import {
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.VITE_FRONTEND_URL,
+  'https://career-compass-ai-gray.vercel.app',
+].filter(Boolean);
+
+const corsOptions: cors.CorsOptions = {
+  origin(origin, callback) {
+    // Allow non-browser requests and local tools without an Origin header.
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const isVercelPreview = /^https:\/\/career-compass-ai-[a-z0-9-]+\.vercel\.app$/i.test(origin);
+    const isAllowed = allowedOrigins.includes(origin) || isVercelPreview;
+
+    if (isAllowed) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
