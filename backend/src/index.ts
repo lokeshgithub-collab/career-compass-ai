@@ -426,14 +426,16 @@ async function sendNotificationEmail(to: string, subject: string, text: string) 
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, FROM_EMAIL } = process.env;
   if (!to || !SMTP_HOST || !SMTP_USER || !SMTP_PASS) return false;
   try {
+    const smtpPort = Number(SMTP_PORT) || 587;
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: false,
+      port: smtpPort,
+      secure: smtpPort === 465,
       auth: { user: SMTP_USER, pass: SMTP_PASS },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 15000,
+      requireTLS: smtpPort !== 465,
     });
 
     await transporter.sendMail({
