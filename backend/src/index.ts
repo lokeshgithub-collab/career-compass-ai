@@ -77,8 +77,8 @@ const allowedOrigins = [
   'https://career-compass-ai-gray.vercel.app',
 ].filter(Boolean);
 
-const corsOptions: cors.CorsOptions = {
-  origin(origin, callback) {
+const corsOptions = {
+  origin(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Allow non-browser requests and local tools without an Origin header.
     if (!origin) {
       return callback(null, true);
