@@ -84,7 +84,8 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    const isVercelPreview = /^https:\/\/career-compass-ai-[a-z0-9-]+\.vercel\.app$/i.test(origin);
+    const isVercelPreview = /^https:\/\/career-compass(?:-ai)?-[a-z0-9-]+\.vercel\.app$/i.test(origin)
+      || /^https:\/\/career-compass-[a-z0-9-]+-lokeshgithub-collabs-projects\.vercel\.app$/i.test(origin);
     const isAllowed = allowedOrigins.includes(origin) || isVercelPreview;
 
     if (isAllowed) {
