@@ -1,38 +1,33 @@
 # Production Deployment Guide
 
-## Architecture Overview
-- Frontend: Vite + React + Tailwind
-- Backend (recommended): Node.js (NestJS or Express) + PostgreSQL + Redis
-- AI: LLM provider for resume analysis and coach
-- Jobs: Aggregation service with scheduled syncs
-- Notifications: Email (SendGrid or SES) + optional push
+## Current Deployment Split
+- Frontend: Vercel
+- Backend API: Railway
 
-## Environment Variables (Frontend)
-- `VITE_API_BASE_URL` - base URL for backend
+## Vercel Environment Variables
+- `VITE_API_BASE_URL=https://your-railway-backend.up.railway.app`
 
-## Environment Variables (Backend)
-- `DATABASE_URL`
-- `REDIS_URL`
-- `JWT_SECRET`
-- `EMAIL_PROVIDER_API_KEY`
-- `LLM_API_KEY`
-- `JOB_FEED_API_KEY` (if using partners)
+## Railway Environment Variables
+- `FRONTEND_URL=https://your-vercel-app.vercel.app`
+- `SMTP_HOST=smtp.gmail.com`
+- `SMTP_PORT=465`
+- `SMTP_USER=your-email@example.com`
+- `SMTP_PASS=your-email-app-password`
+- `FROM_EMAIL=your-email@example.com`
 
-## Deploy Steps (Recommended)
-1. Build frontend: `npm run build`
-2. Deploy static output from `dist/` to your hosting (Netlify, Vercel, S3).
-3. Deploy backend API with Docker on a VM or PaaS.
-4. Configure DNS and SSL certificates.
-5. Enable cron jobs for job sync + email digests.
-6. Turn on observability (logging + metrics + alerts).
+## Important Auth Note
+- If `SMTP_HOST`, `SMTP_USER`, or `SMTP_PASS` are missing in Railway, signup and forgot-password still work, but the app will show the OTP on screen instead of sending an email.
+- For a final review/demo, configure the Railway SMTP variables so the reviewer receives the OTP in email.
 
-## Security Notes
-- Use HTTPS everywhere
-- Encrypt PII and resumes
-- Role-based access for recruiter/admin
-- Audit logs for job feed ingestion
+## Gmail SMTP Setup
+1. Turn on 2-Step Verification for the Gmail account you want to send from.
+2. Generate a Google App Password.
+3. Use that App Password as `SMTP_PASS`.
+4. Keep `SMTP_HOST=smtp.gmail.com` and `SMTP_PORT=465`.
 
-## Scaling Notes
-- Cache job feeds in Redis
-- Async queues for resume analysis + emails
-- Rate limit AI endpoints
+## Deploy Steps
+1. Deploy the frontend to Vercel with `VITE_API_BASE_URL` pointing to Railway.
+2. Deploy the backend to Railway and add the `FRONTEND_URL` and `SMTP_*` variables above.
+3. Redeploy both services after changing environment variables.
+4. Test signup with a fresh email address.
+5. If an email was already used before, the app now redirects that user toward sign-in instead of failing the signup flow.

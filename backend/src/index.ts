@@ -74,8 +74,21 @@ const app = express();
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.VITE_FRONTEND_URL,
+  ...(process.env.FRONTEND_URLS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean),
   'https://career-compass-ai-gray.vercel.app',
 ].filter(Boolean);
+
+function isTrustedFrontendOrigin(origin: string) {
+  if (!origin) return false;
+
+  const isLocalHost = /^https?:\/\/(localhost|127\.0\.0\.1|::1)(:\d+)?$/i.test(origin);
+  const isVercelApp = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+
+  return isLocalHost || isVercelApp || allowedOrigins.includes(origin);
+}
 
 const corsOptions = {
   origin(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
@@ -84,11 +97,7 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    const isVercelPreview = /^https:\/\/career-compass(?:-ai)?-[a-z0-9-]+\.vercel\.app$/i.test(origin)
-      || /^https:\/\/career-compass-[a-z0-9-]+-lokeshgithub-collabs-projects\.vercel\.app$/i.test(origin);
-    const isAllowed = allowedOrigins.includes(origin) || isVercelPreview;
-
-    if (isAllowed) {
+    if (isTrustedFrontendOrigin(origin)) {
       return callback(null, true);
     }
 
@@ -2599,7 +2608,12 @@ app.post('/api/auth/signup/request-otp', async (req, res) => {
 
   const existing = getUserByEmail(email);
   if (existing?.passwordHash && existing?.authVerified) {
-    return res.status(409).json({ error: 'An account already exists for this email' });
+    return res.json({
+      ok: true,
+      accountExists: true,
+      code: 'ACCOUNT_EXISTS',
+      message: 'This email is already registered. Please sign in or use Forgot Password.',
+    });
   }
 
   const otp = generateOtp();
@@ -2621,7 +2635,7 @@ app.post('/api/auth/signup/request-otp', async (req, res) => {
   res.json({
     ok: true,
     delivered,
-    message: delivered ? 'OTP sent to your email' : 'SMTP is not configured. Use the OTP shown for local testing.',
+    message: delivered ? 'OTP sent to your email' : 'Email delivery is not configured on this deployment. Use the OTP shown below to continue.',
     ...(delivered ? {} : { devOtp: otp }),
   });
 });
@@ -2686,7 +2700,7 @@ app.post('/api/auth/forgot-password/request', async (req, res) => {
   res.json({
     ok: true,
     delivered,
-    message: delivered ? 'Password reset OTP sent to your email' : 'SMTP is not configured. Use the OTP shown for local testing.',
+    message: delivered ? 'Password reset OTP sent to your email' : 'Email delivery is not configured on this deployment. Use the OTP shown below to continue.',
     ...(delivered ? {} : { devOtp: otp }),
   });
 });

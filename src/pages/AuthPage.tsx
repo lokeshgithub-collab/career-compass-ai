@@ -55,6 +55,9 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
+    setDevOtpDisplay('');
+    setForgotDevOtp('');
+    setSignupOtp('');
 
     if (!signupForm.name || !signupForm.email || !signupForm.password || !signupForm.confirmPassword) {
       setError('All fields are required');
@@ -90,14 +93,31 @@ export default function AuthPage() {
       });
 
       const data = await resp.json();
+      if (data.accountExists) {
+        setLoginForm({
+          email: signupForm.email,
+          password: signupForm.password,
+        });
+        setSuccessMessage(data.message || 'This email is already registered. Please sign in instead.');
+        setAuthStep('login-form');
+        return;
+      }
+
       if (!resp.ok) {
+        if (resp.status === 409) {
+          setLoginForm({
+            email: signupForm.email,
+            password: signupForm.password,
+          });
+          setSuccessMessage(data.error || 'This email is already registered. Please sign in instead.');
+          setAuthStep('login-form');
+          return;
+        }
         setError(data.error || 'Failed to send OTP');
         return;
       }
 
-      if (data.devOtp) {
-        setDevOtpDisplay(data.devOtp);
-      }
+      setDevOtpDisplay(data.devOtp || '');
       
       setSuccessMessage(data.message || 'OTP sent to your email');
       setAuthStep('signup-otp');
@@ -362,7 +382,7 @@ export default function AuthPage() {
           {(devOtpDisplay || forgotDevOtp) && (
             <div className="mb-6 rounded-lg bg-blue-50 p-4 text-sm text-blue-700">
               <p className="font-semibold">Test OTP: <span className="font-mono font-bold">{devOtpDisplay || forgotDevOtp}</span></p>
-              <p className="mt-1 text-xs">(SMTP not configured, use this OTP for local testing)</p>
+              <p className="mt-1 text-xs">(Email delivery is not configured on this deployment, use this OTP to continue)</p>
             </div>
           )}
 
