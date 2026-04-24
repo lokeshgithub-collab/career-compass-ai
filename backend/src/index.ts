@@ -90,6 +90,17 @@ function isTrustedFrontendOrigin(origin: string) {
   return isLocalHost || isVercelApp || allowedOrigins.includes(origin);
 }
 
+function appendVaryHeader(res: express.Response, value: string) {
+  const current = String(res.getHeader('Vary') || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!current.includes(value)) {
+    res.setHeader('Vary', [...current, value].join(', '));
+  }
+}
+
 const corsOptions = {
   origin(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Allow non-browser requests and local tools without an Origin header.
@@ -101,11 +112,40 @@ const corsOptions = {
       return callback(null, true);
     }
 
+    console.error(`CORS blocked for origin: ${origin}`);
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
+app.use((req, res, next) => {
+  const origin = String(req.headers.origin || '');
+
+  if (!origin) {
+    return next();
+  }
+
+  appendVaryHeader(res, 'Origin');
+
+  if (!isTrustedFrontendOrigin(origin)) {
+    if (req.method === 'OPTIONS') {
+      console.error(`CORS preflight blocked for origin: ${origin}`);
+      return res.status(403).json({ error: `CORS blocked for origin: ${origin}` });
+    }
+    return next();
+  }
+
+  res.header('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
